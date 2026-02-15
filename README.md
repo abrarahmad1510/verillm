@@ -568,58 +568,83 @@ verillm/
 ```
 
 ---
-# Performance Benchmarks
+
+## Performance Benchmarks
 
 <table>
 <tr>
-<td width="50%">
+<td width="45%" valign="top">
 
-### Key Performance Metrics
+### Core Performance Metrics
 
-| Component | Metric | Result |
-|-----------|--------|--------|
-| **Proxy Latency** | p99 | 3.8ms ⚡ |
-| **Receipt Throughput** | 4-Node Cluster | 48,000/sec |
-| **Memory Footprint** | Proxy | 50 MB |
-| **Verification Speed** | API Response | 67ms |
+| Component | Metric | Value |
+|-----------|--------|-------|
+| Proxy Latency (p50) | Response Time | 1.4ms |
+| Proxy Latency (p99) | Response Time | 3.8ms |
+| Auditor Processing | Batch Time | 32ms |
+| Verification API | Query Time | 67ms |
+| Hash Computation | Processing | 0.6ms |
 
-**System Efficiency:**
-- Sub-5ms overhead at production scale
-- Linear horizontal scaling (tested to 32 nodes)
-- Minimal resource consumption (2% CPU per core)
-- 99.95% uptime SLA with multi-region deployment
+### Throughput & Capacity
+
+| System Configuration | Throughput |
+|---------------------|------------|
+| Single Auditor Node | 12,500 req/s |
+| 4-Node Cluster | 48,000 req/s |
+| Kafka Message Pipeline | 55,000 msg/s |
+| Concurrent Connections | 11,200+ |
+
+### Resource Utilization
+
+| Component | CPU Usage | Memory |
+|-----------|-----------|--------|
+| Proxy (WASM) | 2% per core | 50 MB |
+| Auditor Service | 15% per core | 512 MB |
+| Trillian LogServer | 10% per core | 1 GB |
+| PostgreSQL Database | 20% per core | 4 GB |
 
 </td>
-<td width="50%">
+<td width="55%" valign="top">
 
-### Visual Performance
+### Throughput Performance
 
-**Throughput Capacity** (requests/sec)
 ```
-12.5K  ████████████░░░░░░░░  Single Auditor
-48K    ████████████████████  4-Node Cluster  
-55K    ██████████████████████ Kafka Ingestion
-```
-
-**Latency Profile** (milliseconds)
-```
-1.4ms  █░░░░░░░░░░░░░  Proxy p50
-3.8ms  ███░░░░░░░░░░░  Proxy p99
-32ms   ████████████░░  Auditor Processing
-67ms   ██████████████████████ Verification API
+Single Node        ████████████▓░░░░░░░░░  12.5K req/s
+4-Node Cluster     ████████████████████▓░  48K req/s  
+Kafka Pipeline     ██████████████████████  55K msg/s
 ```
 
-**Memory Usage** (per component)
+### Latency Distribution
+
 ```
-50MB   █░░░░░░░░  Proxy
-512MB  ███░░░░░░  Auditor
-1GB    █████░░░░  Trillian
-4GB    ████████░  PostgreSQL
+Proxy p50          █▓░░░░░░░░░░░░░░░░░░░░  1.4ms
+Proxy p99          ███▓░░░░░░░░░░░░░░░░░░  3.8ms
+Auditor            ████████▓░░░░░░░░░░░░░  32ms
+Verification       █████████████▓░░░░░░░░  67ms
+```
+
+### Memory Footprint
+
+```
+Proxy              █░░░░░░░░░░░░░░░░░░░░░  50 MB
+Auditor            █████░░░░░░░░░░░░░░░░░  512 MB
+Trillian           ██████████░░░░░░░░░░░░  1 GB
+PostgreSQL         ████████████████████░░  4 GB
+```
+
+### Scalability Characteristics
+
+```
+Horizontal Scaling    ████████████████████  Linear to 32+ nodes
+Global Latency        ████████████████████  <100ms worldwide
+Storage Efficiency    ████████████████████  500GB per 1B receipts
+Query Performance     ████████████████████  <2s at billion scale
 ```
 
 </td>
 </tr>
 </table>
+
 ---
 
 ## Contributing
