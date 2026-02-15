@@ -573,7 +573,7 @@ verillm/
 
 <table>
 <tr>
-<td width="45%" valign="top">
+<td width="40%" valign="top">
 
 ### Core Performance Metrics
 
@@ -588,7 +588,7 @@ verillm/
 
 ### Resource Utilization
 
-| Component | CPU Usage | Memory |
+| Component | CPU Usage | Data |
 |-----------|-----------|--------|
 | Proxy (WASM) | 2% per core | 50 MB |
 | Auditor Service | 15% per core | 512 MB |
@@ -596,7 +596,7 @@ verillm/
 | PostgreSQL Database | 20% per core | 4 GB |
 
 </td>
-<td width="45%" valign="top">
+<td width="40%" valign="top">
 
 ### Throughput Performance
 
