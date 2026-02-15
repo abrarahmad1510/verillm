@@ -585,7 +585,6 @@ verillm/
 | Verification API | Query Time | 67ms |
 | Hash Computation | Processing | 0.6ms |
 
-<br>
 
 ### Resource Utilization
 
