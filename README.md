@@ -338,53 +338,28 @@ curl -X POST https://api.verillm.dev/v1/verify \
 ```
 
 ### Receipt Structure
+<details>
+<summary><b>Click to expand example receipt</b></summary>
 
 ```json
 {
   "version": "v1",
   "leaf_hash": "blake3:8f7a3bc...",
-  "tree_root": "blake3:9e2f4cd...",
   "leaf_index": 1234567,
-  "timestamp": "2026-02-15T14:20:12.345Z",
-  "inclusion_proof": [
-    "blake3:a1b2c3d...",
-    "blake3:e4f5g6h...",
-    "blake3:i7j8k9l..."
-  ],
+  "timestamp": "2026-02-15T14:20:12Z",
+  "inclusion_proof": ["blake3:a1b2c3d...", "blake3:e4f5g6h..."],
   "context": {
     "model_version": "sha256:4f3e2d1...",
-    "adapters": [
-      {"id": "lora-medical", "hash": "sha256:7a6b5c..."}
-    ],
-    "prompt_template_id": "diagnosis-assistant-v3",
-    "hyperparameters": {
-      "temperature": 0.7,
-      "top_p": 0.9,
-      "max_tokens": 512
-    },
-    "deployment": {
-      "environment": "production",
-      "region": "us-east-1",
-      "pod_uid": "k8s-abc-123"
-    },
-    "request": {
-      "prompt": "Patient presents with...",
-      "metadata": {"patient_id": "redacted"}
-    },
-    "response": {
-      "text": "Based on symptoms, differential diagnosis includes...",
-      "tokens": 234
-    }
+    "adapters": [{"id": "lora-medical", "hash": "sha256:7a6b5c..."}],
+    "hyperparameters": {"temperature": 0.7, "top_p": 0.9, "max_tokens": 512},
+    "deployment": {"environment": "production", "region": "us-east-1"},
+    "request": {"prompt": "Patient presents with...", "metadata": {"patient_id": "redacted"}},
+    "response": {"text": "Based on symptoms, differential diagnosis includes...", "tokens": 234}
   },
   "signature": {
     "algorithm": "Ed25519",
     "value": "a3f7e9b2c...",
-    "certificate": {
-      "issuer": "sigstore-fulcio",
-      "subject": "auditor-service-prod",
-      "not_before": "2026-02-15T14:20:00Z",
-      "not_after": "2026-02-15T14:30:00Z"
-    }
+    "certificate": {"issuer": "sigstore-fulcio", "subject": "auditor-service-prod"}
   }
 }
 ```
