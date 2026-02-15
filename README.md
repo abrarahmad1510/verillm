@@ -218,7 +218,7 @@ Real-time audit interface with receipt explorer, model lineage visualizer, priva
 
 ### Key Technical Specifications
 
-<img src="https://github.com/user-attachments/assets/technical-architecture-icon.png" alt="Technical Architecture" width="200">
+<img src="technical_specifications.png" alt="Technical Architecture" width="200">
 
 
 ### Security Architecture
