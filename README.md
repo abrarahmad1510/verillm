@@ -3,7 +3,7 @@
 <table>
 <tr>
 <td width="200">
-  <img src="https://github.com/user-attachments/assets/verification-shield-logo.png" alt="VeriLLM" width="180">
+  <img width="512" height="512" alt="image" src="https://github.com/user-attachments/assets/439b569b-e707-43b0-b917-fbe59bb0e601" />
 </td>
 <td>
   <h3>Transform Black-Box AI into Legally Defensible, Auditable Artefacts</h3>
