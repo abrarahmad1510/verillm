@@ -218,15 +218,8 @@ Real-time audit interface with receipt explorer, model lineage visualizer, priva
 
 ### Key Technical Specifications
 
-| Component | Technology | Performance Target |
-|-----------|-----------|-------------------|
-| **Proxy Overhead** | Envoy WASM (Rust) | < 5ms p99 latency |
-| **Receipt Throughput** | Auditor Service | 20,000+ receipts/sec |
-| **Hash Function** | BLAKE3 | ~1 GB/s single-core |
-| **Signature Scheme** | Ed25519 via Sigstore | < 1ms per signature |
-| **Tree Inclusion Proof** | Trillian Merkle Tree | O(log n) verification |
-| **Storage Efficiency** | PostgreSQL + Partitioning | Time-series optimized |
-| **Availability** | Multi-Region | 99.95% uptime SLA |
+<img src="https://github.com/user-attachments/assets/technical-architecture-icon.png" alt="Technical Architecture" width="200">
+
 
 ### Security Architecture
 
