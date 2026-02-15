@@ -56,60 +56,19 @@ Built on battle-tested infrastructure from Certificate Transparency and Sigstore
 
 ---
 
-## The Problem
-
-### The Invisible Crisis of AI Accountability
-
-**73% of healthcare professionals won't trust AI without verifiable audit trails**
-
-Modern AI deployments create silent liability. Every time a large language model generates a response in production, critical questions remain unanswered:
-
-- **Model Uncertainty**: Which exact model version produced this output?
-- **Configuration Opacity**: What adapters, prompts, and hyperparameters were active?
-- **Authorization Gap**: Was this model approved for this specific use case?
-- **Audit Blindness**: Can regulators independently verify the response without internal access?
-
-### Real-World Consequences
-
-| Impact Area | Consequences |
-|-------------|--------------|
-| **Legal** | US hospital settled for $12M after AI triage tool error; could not prove model version responsible |
-| **Regulatory** | EU AI Act fines up to €30M or 6% of global turnover for AI systems lacking full traceability |
-| **Operational** | 64% of compliance teams distrust existing logs; spend $2.5M annually on manual governance |
-| **Clinical** | 73% of radiologists refuse AI adoption without independent model verification capabilities |
-
-### Why Current Solutions Fail
-
-Existing AI governance vendors (Zenity, Arthur AI, Secure Privacy) provide dashboards and monitoring—but they fundamentally do not solve verification because:
-
-- ❌ They operate on **mutable logs after the fact** that can be altered or deleted
-- ❌ They provide **no cryptographic proof** of model lineage at inference time  
-- ❌ Their audit reports are themselves **not independently verifiable**
-- ❌ They **observe rather than attest**—they watch but cannot prove
-
-**VeriLLM is different.** It is a cryptographic co-processor that generates tamper-evident receipts at inference time, creating an immutable, independently verifiable record that serves as the single source of truth for regulatory defense, litigation, and patient safety.
-
----
-
 ## Key Features
 
-### Cryptographic Receipts
+### 🌟 Cryptographic Receipts
 Every inference generates a digitally signed receipt containing the complete decision context: model hash, adapter identifiers, hyperparameters, timestamp, and deployment environment. Receipts use BLAKE3 hashing and Ed25519 signatures anchored in a public transparency log, making them mathematically provable and independently verifiable without granting internal system access.
 
-### Tamper-Evident Audit Trails  
+### 🌟 Tamper-Evident Audit Trails  
 All receipts are appended to an immutable Merkle tree (powered by Google's Trillian) with cryptographic inclusion proofs. Any attempt to alter or delete a historical receipt is instantly detectable. Audit exports contain complete cryptographic chains that regulators can verify using open-source tools.
 
-### Production-Grade Performance
+### 🌟 Production-Grade Performance
 Sub-5ms p99 latency overhead when processing 10,000+ requests per second. Zero-copy hashing, batched Merkle tree updates, and asynchronous receipt generation ensure VeriLLM adds negligible latency to production serving. Works seamlessly with vLLM, HuggingFace TGI, NVIDIA Triton, and TensorFlow Serving.
 
-### Healthcare & Finance Ready
-Built from day one for high-stakes regulated environments. GDPR-compliant privacy-preserving receipts, HIPAA audit trail requirements, EU AI Act conformity assessments, and SOC 2 readiness. Includes role-based access control, encrypted persistence, and air-gapped deployment options.
-
-### Complete Model Lineage
+### 🌟 Complete Model Lineage
 Automatic capture of base model version hashes, LoRA/prefix adapter identifiers, prompt template IDs, and hyperparameter configurations. Service dependency mapping shows which models call which retrieval systems or external APIs. Critical path identification for debugging distributed AI systems.
-
-### Cloud-Agnostic & Non-Intrusive
-Drop-in deployment as an Envoy WebAssembly filter—no changes to model weights, training pipelines, or inference code. Works across AWS Lambda, Azure Functions, Google Cloud Functions, and on-premises Kubernetes. Integration takes minutes, not weeks.
 
 ---
 
@@ -160,8 +119,7 @@ helm install verillm verillm/verillm \
 kubectl get pods -n verillm-system
 ```
 
-### Docker Compose (Development)
-
+### Docker Compose for Developement
 ```bash
 # Clone repository
 git clone https://github.com/verillm/verillm
@@ -178,69 +136,7 @@ docker-compose up -d
 docker-compose logs -f auditor
 ```
 
-### Envoy Integration (Existing Infrastructure)
-
-If you already run Envoy, add VeriLLM as a WASM filter:
-
-```yaml
-# envoy.yaml
-static_resources:
-  listeners:
-  - name: llm_listener
-    address:
-      socket_address:
-        address: 0.0.0.0
-        port_value: 8080
-    filter_chains:
-    - filters:
-      - name: envoy.filters.network.http_connection_manager
-        typed_config:
-          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
-          http_filters:
-          - name: verillm_proxy
-            typed_config:
-              "@type": type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
-              config:
-                vm_config:
-                  runtime: "envoy.wasm.runtime.v8"
-                  code:
-                    local:
-                      filename: "/etc/envoy/verillm_filter.wasm"
-                configuration:
-                  "@type": type.googleapis.com/google.protobuf.StringValue
-                  value: |
-                    {
-                      "auditor_endpoint": "http://auditor-service:50051",
-                      "model_registry_url": "http://registry:8080",
-                      "signing_enabled": true
-                    }
-          - name: envoy.filters.http.router
-          route_config:
-            name: llm_route
-            virtual_hosts:
-            - name: llm_backend
-              domains: ["*"]
-              routes:
-              - match: { prefix: "/" }
-                route:
-                  cluster: llm_cluster
-  clusters:
-  - name: llm_cluster
-    connect_timeout: 30s
-    type: LOGICAL_DNS
-    lb_policy: ROUND_ROBIN
-    load_assignment:
-      cluster_name: llm_cluster
-      endpoints:
-      - lb_endpoints:
-        - endpoint:
-            address:
-              socket_address:
-                address: llm-server
-                port_value: 8000
-```
-
-### Manual Installation (Advanced)
+### Manual Installation For Advanced Analysis
 
 ```bash
 # Build from source
@@ -621,31 +517,6 @@ jobs:
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
 </p>
 
-### Core Technologies
-
-**Proxy & Interception**
-- Envoy Proxy: Cloud-native HTTP/gRPC proxy
-- WebAssembly (WASM): Portable, sandboxed execution
-- Rust: Memory-safe, high-performance filter implementation
-
-**Cryptography & Verification**
-- BLAKE3: Fast cryptographic hashing (~1 GB/s)
-- Ed25519: Digital signatures via Sigstore
-- Google Trillian: Production-proven Merkle tree (Certificate Transparency)
-- Sigstore Fulcio: Ephemeral certificate issuance
-
-**Infrastructure**
-- Apache Kafka: High-throughput message streaming
-- PostgreSQL: ACID-compliant receipt storage with time-series partitioning
-- Kubernetes: Container orchestration and scaling
-- Helm: Declarative deployment management
-
-**API & Dashboard**
-- Rust + Tokio: Async gRPC and REST services
-- GraphQL (async-graphql): Efficient data querying
-- React + TypeScript: Modern, type-safe frontend
-- Material-UI: Enterprise-ready component library
-
 ### Project Structure
 
 ```
@@ -729,12 +600,6 @@ verillm/
 | PostgreSQL | 20% per core | 4 GB | 100 MB/s |
 | Dashboard | 5% per core | 256 MB | Minimal |
 
-### Scalability
-
-- **Horizontal Scaling**: Linear throughput increase up to 32 auditor replicas
-- **Geographic Distribution**: Sub-100ms latency for global deployments with regional Trillian instances
-- **Storage Growth**: 1 billion receipts = ~500 GB (compressed), queryable in <2 seconds
-
 ---
 
 ## Contributing
@@ -762,45 +627,6 @@ docker-compose -f docker-compose.dev.yml up -d
 cargo test --workspace
 cd dashboard && npm test && cd ..
 ```
-
-### Contribution Guidelines
-
-**Code Contributions:**
-
-1. Fork the repository and create a feature branch (`git checkout -b feature/amazing-feature`)
-2. Make your changes with appropriate test coverage (aim for >80%)
-3. Ensure all tests pass (`cargo test`, `npm test`)
-4. Format code (`cargo fmt`, `npm run format`)
-5. Submit pull request with detailed description
-
-**Code Quality Standards:**
-
-- Comprehensive unit and integration tests
-- Clear documentation for public APIs
-- Follow Rust API guidelines and React best practices
-- Use semantic commit messages (Conventional Commits)
-- Zero compiler warnings (`cargo clippy -- -D warnings`)
-
-### Areas for Contribution
-
-| Area | Description | Complexity |
-|------|-------------|-----------|
-| SDK Libraries | Add verification SDKs for Java, .NET, Ruby | Moderate |
-| Cloud Integrations | Native support for Fargate, Cloud Run, Cloud Functions | Moderate |
-| ML Framework Plugins | Direct integrations for PyTorch Serve, Ray Serve | Moderate-High |
-| Dashboard Features | Enhanced visualizations, alerting, custom reports | Moderate |
-| Performance | SIMD optimizations, GPU-accelerated hashing | High |
-| Documentation | Tutorials, best practices, deployment guides | Low-Moderate |
-| Testing | Fuzzing, chaos engineering, load testing | Moderate |
-| Security | Formal verification, security audits, threat modeling | High |
-
-### Getting Help
-
-- **Discord Community**: [discord.gg/verillm](https://discord.gg/verillm) (real-time support)
-- **Mailing List**: [verillm-dev@groups.io](mailto:verillm-dev@groups.io)
-- **GitHub Discussions**: [github.com/verillm/verillm/discussions](https://github.com/verillm/verillm/discussions)
-- **Issue Tracker**: [github.com/verillm/verillm/issues](https://github.com/verillm/verillm/issues)
-- **Documentation**: [docs.verillm.dev](https://docs.verillm.dev)
 
 ---
 
@@ -833,79 +659,6 @@ cd dashboard && npm test && cd ..
 **Solution**: VeriLLM receipts attached to every contract analysis, stored alongside case files. If disputed, firm produces signed receipt showing exact model configuration and timestamp.
 
 **Impact**: Malpractice insurance coverage, professional liability protection.
-
----
-
-## Community & Support
-
-### Success Stories
-
-> **"VeriLLM transformed our regulatory posture. We went from 40 hours of manual audit preparation to 30 minutes of cryptographic export."**  
-> — *Director of AI Compliance, Top 10 US Hospital Network*
-
-> **"For the first time, we can prove to regulators exactly which model version made each credit decision. VeriLLM is our insurance policy against fair lending lawsuits."**  
-> — *Chief Risk Officer, Regional Bank*
-
-> **"Our radiologists finally trust the AI assistant because they can independently verify every receipt. Adoption rate increased from 12% to 89% in six months."**  
-> — *CMIO, Academic Medical Center*
-
-### Join Our Community
-
-- **Monthly Webinars**: Feature demos, best practices, and AMA sessions
-- **RFC Process**: Contribute to major design decisions
-- **Virtual Meetups**: Connect with other users and contributors
-- **Conference Talks**: Meet us at KubeCon, MLSys, FOSDEM, and more
-
-### Enterprise Support
-
-For organizations requiring dedicated support, SLA guarantees, and custom integrations:
-
-- **Enterprise Inquiries**: [enterprise@verillm.dev](mailto:enterprise@verillm.dev)
-- **Partnerships**: [partnerships@verillm.dev](mailto:partnerships@verillm.dev)
-
----
-
-## Roadmap
-
-### Current Release (v1.0)
-- Envoy WASM proxy with <5ms overhead
-- Rust auditor service with Trillian integration
-- Sigstore-based ephemeral certificates
-- React dashboard with receipt explorer
-- Public verification API
-- Kubernetes and Docker Compose deployment
-
-### Next Release (v1.1 - Q2 2026)
-- Native vLLM and TGI plugins (bypass proxy for even lower latency)
-- Real-time alerting for privacy budget exhaustion
-- Differential privacy computation verification
-- Enhanced model lineage graph visualization
-- Multi-region Trillian federation
-
-### Future (v2.0 - Q4 2026)
-- Hardware-accelerated hashing (GPU, SIMD)
-- Privacy-preserving receipts (zero-knowledge proofs)
-- Integration with AI Act compliance frameworks
-- Automated remediation workflows
-- Blockchain anchoring for additional immutability
-
----
-
-## Academic Publications
-
-VeriLLM is designed to generate high-impact research publications at the intersection of ML systems, security, and applied cryptography.
-
-**Target Conferences:**
-- MLSys 2027 (Machine Learning Systems)
-- OSDI 2027 (Operating Systems Design and Implementation)
-- EuroSys 2027 (European Conference on Computer Systems)
-- USENIX Security 2027
-
-**Research Contributions:**
-- Novel application of Certificate Transparency to LLM inference
-- Sub-5ms cryptographic provenance with production-scale throughput
-- Formal verification of canonicalization and hashing logic
-- First open-source reference implementation for AI Act compliance
 
 ---
 
