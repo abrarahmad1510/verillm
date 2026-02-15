@@ -188,12 +188,6 @@ graph TB
     API -->|Verify Inclusion| Trillian
     
     External[External Auditor/<br/>Regulator] -->|Verify Receipt| API
-    
-    style Proxy fill:#4A90E2
-    style Auditor fill:#7B68EE
-    style Trillian fill:#50C878
-    style Dashboard fill:#FF6B6B
-    style API fill:#FFA500
 ```
 
 ### Architecture Layers
