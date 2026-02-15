@@ -573,7 +573,7 @@ verillm/
 
 <table>
 <tr>
-<td width="40%" valign="top">
+<td width="50%" valign="top">
 
 ### Core Performance Metrics
 
@@ -596,7 +596,7 @@ verillm/
 | PostgreSQL Database | 20% per core | 4 GB |
 
 </td>
-<td width="60%" valign="top">
+<td width="50%" valign="top">
 
 ### Throughput Performance
 
