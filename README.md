@@ -338,8 +338,6 @@ curl -X POST https://api.verillm.dev/v1/verify \
 ```
 
 ### Receipt Structure
-<details>
-<summary><b>Click to expand example receipt</b></summary>
 
 ```json
 {
